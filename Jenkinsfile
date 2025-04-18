@@ -2,6 +2,10 @@ pipeline {
     agent {
         label 'build'
     }
+    environment {
+	    DOCKER_IMAGE = 'ashokm77/test-repo'
+	    DOCKER_CREDENTIAL_ID= 'docker-creds'
+    }	
     stages {
             stage('checkout-stage') {
                 steps {
@@ -16,14 +20,23 @@ pipeline {
 	    stage('Build Docker Image') {
                 steps {
                    script {
-                     sh 'docker build -t javaweb:v1 .'
+                     dockerImage = docker.build("${DOCKER_IMAGE}:V${env.BUILD_NUMBER}")
+                   }
+                }
+            }
+	    stage('Push Docker Image') {
+                steps {
+                   script {
+                      docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
+                        dockerImage.push()
+                      }
                    }
                 }
             }
 	    stage('Run Docker Container') {
                steps {
                   script {
-                    sh 'docker run -d -p 9000:8080 javaweb:v1'
+                    sh 'docker run -d -p 9000:8080 ${DOCKER_IMAGE}:V${env.BUILD_NUMBER}'
                   }
                }
 	    }
