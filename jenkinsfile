@@ -39,7 +39,7 @@ pipeline {
             }
             stage('Push Docker Image to ECR') {
                 steps {
-                    sh "docker push ${ECR_REPO}:$V{env.BUILD_NUMBER}"
+                    sh "docker push ${ECR_REPO}:V${env.BUILD_NUMBER}"
                 }
             }
 	    stage('Run Docker Container') {
