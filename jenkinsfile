@@ -13,12 +13,12 @@ pipeline {
                     git branch: 'master', credentialsId: 'ashoksm', url: 'https://github.com/ashok77sm/docker-sample-java-webapp.git'
                 }
             }   
-	          stage('build-stage') {
+	    stage('build-stage') {
                 steps {
                    sh 'mvn clean install'
                 }
             }
-	          stage('Build Docker Image') {
+	    stage('Build Docker Image') {
                 steps {
                    script {
                        dockerImage = docker.build("${ECR_REPO}:V${env.BUILD_NUMBER}")
@@ -32,7 +32,7 @@ pipeline {
             }
             stage('Push Docker Image to ECR') {
                 steps {
-                   sh "docker push ${ECR_REPO}:${env.BUILD_NUMBER}"
+                   sh "docker push ${ECR_REPO}:V${env.BUILD_NUMBER}"
                 }
             }
 	    stage('Run Docker Container') {
@@ -41,6 +41,6 @@ pipeline {
                     sh "docker run -d -p 9000:8080 ${ECR_REPO}:V${env.BUILD_NUMBER}"
                   }
                }
-	          }
+	    }
     }
 }
